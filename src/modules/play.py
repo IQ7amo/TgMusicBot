@@ -144,14 +144,7 @@ async def _handle_single_track(
             f"‣ <b>Duration:</b> {sec_to_min(song.duration)}\n"
             f"‣ <b>Requested by:</b> {song.user}"
         )
-        thumb = await gen_thumb(song) if await db.get_thumb_status(chat_id) else ""
-        await _update_msg_with_thumb(
-            c,
-            msg,
-            text,
-            thumb,
-            PlayButton if await db.get_buttons_status(chat_id) else None,
-        )
+        await edit_text(c, msg, text)
         return None
 
     chat_cache.set_active(chat_id, True)
@@ -170,13 +163,7 @@ async def _handle_single_track(
         f"‣ <b>Requested by:</b> {song.user}"
     )
 
-    reply = await _update_msg_with_thumb(
-        c,
-        msg,
-        text,
-        thumb,
-        PlayButton if await db.get_buttons_status(chat_id) else None,
-    )
+    reply = await edit_text(c, msg, text)
     if isinstance(reply, types.Error):
         LOGGER.info("sending reply: %s", reply)
         return None
@@ -227,7 +214,7 @@ async def _handle_multiple_tracks(
     if not is_active:
         await call.play_next(chat_id)
 
-    await edit_text(msg, text, reply_markup=PlayButton)
+    await edit_text(msg, text)
 
 
 async def play_music(
